@@ -10,6 +10,9 @@ import type {
   TeamMembersContent,
   CardContent,
   ButtonContent,
+  GalleryContent,
+  EmailSignupContent,
+  SpecTableContent,
 } from '../content'
 import TeamMembers from './TeamMembers'
 import Page from './Page'
@@ -20,6 +23,9 @@ import Hero from './Hero'
 import Tabs from './Tabs'
 import Card from './Card'
 import Button from './Button'
+import Gallery from './Gallery'
+import EmailSignup from './EmailSignup'
+import SpecTable from './SpecTable'
 
 export type ContentProps = {
   blok: Content
@@ -54,6 +60,15 @@ function Content(props: ContentProps) {
       ) : null}
       {props.blok.component === 'button' ? (
         <Button blok={props.blok as ButtonContent} />
+      ) : null}
+      {props.blok.component === 'gallery' ? (
+        <Gallery blok={props.blok as GalleryContent} />
+      ) : null}
+      {props.blok.component === 'emailSignup' ? (
+        <EmailSignup blok={props.blok as EmailSignupContent} />
+      ) : null}
+      {props.blok.component === 'specTable' ? (
+        <SpecTable blok={props.blok as SpecTableContent} />
       ) : null}
     </>
   )

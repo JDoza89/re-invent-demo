@@ -3,6 +3,7 @@ import type {
   BlockContent,
   LinkContent,
   RichTextContent,
+  TableContent,
   Story,
 } from '../delivery-api'
 
@@ -19,6 +20,9 @@ export type Content =
   | TeamMembersContent
   | TeamMemberContent
   | ButtonContent
+  | GalleryContent
+  | EmailSignupContent
+  | SpecTableContent
 
 /**
  * When the parsing of a component fails, fall back fack to this component.
@@ -33,6 +37,9 @@ export type UnknownContent = BlockContent<{
 export type PageContent = BlockContent<{
   component: 'page'
   body: Content[]
+  meta_title?: string
+  meta_description?: string
+  og_image?: AssetContent
 }>
 
 export type BackgroundColor =
@@ -117,4 +124,24 @@ export type ButtonContent = BlockContent<{
   text: string
   link?: LinkContent
   color: 'primary' | 'secondary'
+}>
+
+export type GalleryContent = BlockContent<{
+  component: 'gallery'
+  title: string
+  images: AssetContent[]
+}>
+
+export type EmailSignupContent = BlockContent<{
+  component: 'emailSignup'
+  heading: string
+  description: string
+  buttonText: string
+  successMessage: string
+}>
+
+export type SpecTableContent = BlockContent<{
+  component: 'specTable'
+  title: string
+  specs: TableContent
 }>

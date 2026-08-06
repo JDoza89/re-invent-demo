@@ -3,6 +3,7 @@ import * as React from 'react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { YoutubeIcon, XIcon, LinkedInIcon } from './icons'
+import { stripLocaleFromPath } from '@/i18n/locales'
 
 export type FooterViewProps = {
   className?: string
@@ -88,6 +89,11 @@ function FooterView(props: FooterViewProps) {
     setPath(window.location.pathname)
   }, [])
 
+  const { locale, basePath } =
+    path !== undefined
+      ? stripLocaleFromPath(path)
+      : { locale: undefined, basePath: undefined }
+
   return (
     <div
       className={`self-stretch px-4 pt-10 pb-6 bg-stone-900 flex flex-col justify-center items-center gap-8 overflow-hidden sm:px-10 md:px-20 md:pt-20 md:pb-10 md:gap-12 ${props.className}`}
@@ -136,17 +142,24 @@ function FooterView(props: FooterViewProps) {
               <div className="text-white text-lg font-semibold leading-6 md:text-xl md:leading-7">
                 {menu.title}
               </div>
-              {menu.items?.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`text-base font-medium leading-snug ${
-                    path === item.href ? 'text-green-300' : 'text-white/70'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {menu.items?.map((item) => {
+                const href = locale
+                  ? `/${locale}${item.href === '/' ? '' : item.href}`
+                  : item.href
+                return (
+                  <Link
+                    key={item.href}
+                    href={href}
+                    className={`text-base font-medium leading-snug ${
+                      basePath === item.href
+                        ? 'text-green-300'
+                        : 'text-white/70'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
             </div>
           ))}
         </div>

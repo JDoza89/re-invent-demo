@@ -7,6 +7,9 @@ import Hero from '../storyblok/Hero'
 import Tabs from '../storyblok/Tabs'
 import Card from '../storyblok/Card'
 import Button from '../storyblok/Button'
+import Gallery from '../storyblok/Gallery'
+import EmailSignup from '../storyblok/EmailSignup'
+import SpecTable from '../storyblok/SpecTable'
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc'
 
 export const getStoryblokApi = storyblokInit({
@@ -22,6 +25,9 @@ export const getStoryblokApi = storyblokInit({
     hero: Hero,
     tabs: Tabs,
     button: Button,
+    gallery: Gallery,
+    emailSignup: EmailSignup,
+    specTable: SpecTable,
   },
   apiOptions: {
     /** Set the correct region for your space. Learn more: https:/www.storyblok.com/docs/packages/storyblok-js#example-region-parameter */

@@ -15,6 +15,10 @@ import {
   type AssetContent,
   type RichTextContent,
   type BlockContent,
+  type TableContent,
+  type TableHeadContent,
+  type TableRowContent,
+  type TableColumnContent,
 } from '../delivery-api'
 import { parseRichTextContent } from './parseRichTextContent'
 import { parseLinkContent } from './parseLinkContent'
@@ -33,6 +37,9 @@ import type {
   TeamMembersContent,
   BackgroundColor,
   ButtonContent,
+  GalleryContent,
+  EmailSignupContent,
+  SpecTableContent,
 } from '.'
 
 // Recursive parsers require lazy loading
@@ -49,6 +56,9 @@ export const parseContent: Parser<Content> = lazy(() =>
     parseTeamMembersContent,
     parseTeamMemberContent,
     parseButtonContent,
+    parseGalleryContent,
+    parseEmailSignupContent,
+    parseSpecTableContent,
   ),
 )
 
@@ -106,6 +116,9 @@ export const parsePageContent = object<PageContent>({
   _uid: parseString,
   _editable: optional(parseString),
   body: withDefault(parseBlocks, []),
+  meta_title: optional(withDefault(parseString, undefined)),
+  meta_description: optional(withDefault(parseString, undefined)),
+  og_image: optional(withDefault(parseAssetContent, undefined)),
 })
 
 export const parseTestimonialContent = object<TestimonialContent>({
@@ -214,4 +227,55 @@ export const parseButtonContent = object<ButtonContent>({
   text: parseString,
   link: withDefault(parseLinkContent, undefined),
   color: withDefault(oneOf(equals('primary'), equals('secondary')), 'primary'),
+})
+
+export const parseGalleryContent = object<GalleryContent>({
+  component: equals('gallery'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  title: withDefault(parseString, ''),
+  images: withDefault(array(parseAssetContent), []),
+})
+
+export const parseEmailSignupContent = object<EmailSignupContent>({
+  component: equals('emailSignup'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  heading: withDefault(parseString, ''),
+  description: withDefault(parseString, ''),
+  buttonText: withDefault(parseString, 'Join the waitlist'),
+  successMessage: withDefault(parseString, "You're on the list!"),
+})
+
+const parseTableHeadContent = object<TableHeadContent>({
+  component: equals('_table_head'),
+  value: withDefault(parseString, undefined),
+})
+
+const parseTableColumnContent = object<TableColumnContent>({
+  component: equals('_table_col'),
+  value: withDefault(parseString, undefined),
+})
+
+const parseTableRowContent = object<TableRowContent>({
+  component: equals('_table_row'),
+  body: array(parseTableColumnContent),
+})
+
+const parseTableContent = object<TableContent>({
+  fieldtype: equals('table'),
+  thead: array(parseTableHeadContent),
+  tbody: array(parseTableRowContent),
+})
+
+export const parseSpecTableContent = object<SpecTableContent>({
+  component: equals('specTable'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  title: withDefault(parseString, ''),
+  specs: withDefault(parseTableContent, {
+    fieldtype: 'table',
+    thead: [],
+    tbody: [],
+  } as TableContent),
 })
