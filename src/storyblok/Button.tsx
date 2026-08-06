@@ -1,31 +1,31 @@
-import * as React from 'react'
-import { storyblokEditable } from '@storyblok/react/rsc'
-import Link from 'next/link'
-import type { ButtonContent } from '../content'
+import * as React from "react";
+import { storyblokEditable } from "@storyblok/react/rsc";
+import Link from "next/link";
+import type { ButtonContent } from "../content";
 import type {
   AssetLinkContent,
   EmailLinkContent,
   StoryLinkContent,
   UrlLinkContent,
-} from '../delivery-api'
+} from "../delivery-api";
 
 export type ButtonProps = {
-  blok: ButtonContent
-}
+  blok: ButtonContent;
+};
 
 const classFromContent = (content: ButtonContent): string =>
   `self-center px-6 py-3 rounded-lg inline-flex flex-col items-end gap-3 overflow-hidden text-right justify-center text-sm font-semibold leading-tight transition-border duration-300 ease-in-out ${colorStyles(
     content,
-  )}`
+  )}`;
 
 const colorStyles = (content: ButtonContent): string => {
   switch (content.color) {
-    case 'primary':
-      return 'bg-stone-900 hover:bg-stone-800 text-white hover:border-stone-800'
-    case 'secondary':
-      return 'bg-white color-stone-900 hover:bg-stone-100 hover:border-stone-900'
+    case "primary":
+      return "bg-stone-900 hover:bg-stone-800 text-white hover:border-stone-800";
+    case "secondary":
+      return "bg-white color-stone-900 hover:bg-stone-100 hover:border-stone-900";
   }
-}
+};
 
 /**
  * Converts a story link slug to a URL path for this application.
@@ -33,12 +33,13 @@ const colorStyles = (content: ButtonContent): string => {
  * @param slugs
  */
 const hrefFromStoryLink = (slugs: string): string =>
-  '/' + slugs.split('/').slice(1).join('/')
+  "/" + slugs.split("/").slice(1).join("/");
 
 function Button(props: ButtonProps) {
   return (
     <>
-      {props.blok.link?.linktype === 'url' ? (
+      {props.blok.link?.linktype === "url" &&
+      props.blok.link?.cached_url !== undefined ? (
         <Link
           rel="noopener noreferrer"
           {...storyblokEditable(props.blok)}
@@ -49,7 +50,8 @@ function Button(props: ButtonProps) {
           {props.blok.text}
         </Link>
       ) : null}
-      {props.blok.link?.linktype === 'story' ? (
+      {props.blok.link?.linktype === "story" &&
+      props.blok.link?.cached_url !== undefined ? (
         <Link
           rel="noopener noreferrer"
           {...storyblokEditable(props.blok)}
@@ -62,7 +64,7 @@ function Button(props: ButtonProps) {
           {props.blok.text}
         </Link>
       ) : null}
-      {props.blok.link?.linktype === 'email' ? (
+      {props.blok.link?.linktype === "email" ? (
         <Link
           {...storyblokEditable(props.blok)}
           href={`mailto:${(props.blok.link as EmailLinkContent)?.email}`}
@@ -71,7 +73,7 @@ function Button(props: ButtonProps) {
           {props.blok.text}
         </Link>
       ) : null}
-      {props.blok.link?.linktype === 'asset' ? (
+      {props.blok.link?.linktype === "asset" ? (
         <Link
           rel="noopener noreferrer"
           {...storyblokEditable(props.blok)}
@@ -82,7 +84,7 @@ function Button(props: ButtonProps) {
         </Link>
       ) : null}
     </>
-  )
+  );
 }
 
-export default Button
+export default Button;
