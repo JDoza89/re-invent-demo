@@ -3,7 +3,9 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pnpm ci --cache .npm --prefer-offline
+        - corepack enable
+        - corepack prepare pnpm@latest --activate
+        - pnpm install --frozen-lockfile --prefer-offline
         - env | grep -e STORYBLOK_DELIVERY_API_TOKEN -e STORYBLOK_API_BASE_URL >> .env.production || true
     build:
       commands:
@@ -15,4 +17,4 @@ frontend:
   cache:
     paths:
       - .next/cache/**/*
-      - .npm/**/*
+      - .pnpm/**/*
