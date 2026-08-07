@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Deployment
+
+This project is deployed to AWS Amplify: https://main.d3nkvpi7ryqetx.amplifyapp.com/aurora-trail-2
+
 ## Getting Started
 
 First, install dependencies:
