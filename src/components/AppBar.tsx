@@ -1,49 +1,53 @@
-'use client'
-import * as React from 'react'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { HamburgerIcon, BrandIcon } from './icons'
-import LanguageSwitcher from './LanguageSwitcher'
-import { stripLocaleFromPath } from '@/i18n/locales'
+"use client";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { HamburgerIcon, BrandIcon } from "./icons";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { stripLocaleFromPath } from "@/i18n/locales";
 
 export type AppbarProps = {
-  className?: string
-}
+  className?: string;
+};
 
 const tabs = [
   {
-    label: 'Home',
-    href: '/',
+    label: "Home",
+    href: "/",
   },
   {
-    label: 'Services',
-    href: '/services',
+    label: "Products",
+    href: "/products",
   },
   {
-    label: 'About',
-    href: '/about',
+    label: "Services",
+    href: "/services",
   },
-]
+  {
+    label: "About",
+    href: "/about",
+  },
+];
 
 function AppBarView(props: AppbarProps) {
-  const [path, setPath] = useState<string | undefined>(() => undefined)
+  const [path, setPath] = useState<string | undefined>(() => undefined);
 
-  const [menuOpen, setMenuOpen] = useState<boolean>(() => false)
+  const [menuOpen, setMenuOpen] = useState<boolean>(() => false);
 
   useEffect(() => {
-    setPath(window.location.pathname)
-  }, [])
+    setPath(window.location.pathname);
+  }, []);
 
   const { locale, basePath } =
     path !== undefined
       ? stripLocaleFromPath(path)
-      : { locale: undefined, basePath: undefined }
+      : { locale: undefined, basePath: undefined };
 
   const localizedTabs = tabs.map((tab) => ({
     ...tab,
-    href: locale ? `/${locale}${tab.href === '/' ? '' : tab.href}` : tab.href,
+    href: locale ? `/${locale}${tab.href === "/" ? "" : tab.href}` : tab.href,
     originalHref: tab.href,
-  }))
+  }));
 
   return (
     <div
@@ -79,8 +83,8 @@ function AppBarView(props: AppbarProps) {
               href={tab.href}
               className={`flex items-center text-stone-900 text-sm font-semibold leading-tight transition-border duration-300 ease-in-out border-y-[3px] ${
                 basePath === tab.originalHref
-                  ? 'border-b-stone-900 border-t-transparent'
-                  : ' border-transparent'
+                  ? "border-b-stone-900 border-t-transparent"
+                  : " border-transparent"
               }`}
             >
               <span>{tab.label}</span>
@@ -103,7 +107,7 @@ function AppBarView(props: AppbarProps) {
               href={tab.href}
               onClick={(_event) => setMenuOpen(false)}
               className={`flex items-center text-stone-900 hover:text-stone-800 text-base font-semibold leading-tight px-2 py-2 rounded transition-colors duration-200 ${
-                basePath === tab.originalHref ? 'bg-stone-100' : ''
+                basePath === tab.originalHref ? "bg-stone-100" : ""
               }`}
             >
               <span>{tab.label}</span>
@@ -113,7 +117,7 @@ function AppBarView(props: AppbarProps) {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
 
-export default AppBarView
+export default AppBarView;
