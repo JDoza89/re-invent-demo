@@ -13,6 +13,8 @@ import type {
   GalleryContent,
   EmailSignupContent,
   SpecTableContent,
+  ProductPageContent,
+  RelatedProductsContent,
 } from '../content'
 import TeamMembers from './TeamMembers'
 import Page from './Page'
@@ -26,6 +28,8 @@ import Button from './Button'
 import Gallery from './Gallery'
 import EmailSignup from './EmailSignup'
 import SpecTable from './SpecTable'
+import ProductPage from './ProductPage'
+import RelatedProducts from './RelatedProducts'
 
 export type ContentProps = {
   blok: Content
@@ -36,6 +40,12 @@ function Content(props: ContentProps) {
     <>
       {props.blok.component === 'page' ? (
         <Page blok={props.blok as PageContent} />
+      ) : null}
+      {props.blok.component === 'productPage' ? (
+        <ProductPage blok={props.blok as ProductPageContent} />
+      ) : null}
+      {props.blok.component === 'relatedProducts' ? (
+        <RelatedProducts blok={props.blok as RelatedProductsContent} />
       ) : null}
       {props.blok.component === 'testimonials' ? (
         <Testimonials blok={props.blok as TestimonialsContent} />

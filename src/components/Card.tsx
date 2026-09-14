@@ -24,6 +24,11 @@ function Card(props: CardProps) {
           height={34}
         />
       ) : null}
+      {props.blok.title ? (
+        <h3 className="text-stone-900 text-lg font-extrabold leading-tight font-inter">
+          {props.blok.title}
+        </h3>
+      ) : null}
       <RichTextView doc={props.blok.description} />
     </div>
   )

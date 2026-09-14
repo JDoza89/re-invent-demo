@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { storyblokEditable } from '@storyblok/react/rsc'
+import Link from 'next/link'
 import type { SpecTableContent } from '../content'
 
 export type SpecTableProps = {
@@ -48,6 +49,18 @@ function SpecTable(props: SpecTableProps) {
             ))}
           </tbody>
         </table>
+        {props.blok.spec_sheet ? (
+          <Link
+            href={props.blok.spec_sheet.filename}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="self-start text-stone-900 text-sm font-semibold underline underline-offset-4 font-inter"
+          >
+            {props.blok.spec_sheet.title ||
+              props.blok.spec_sheet.alt ||
+              props.blok.spec_sheet.filename.split('/').pop()}
+          </Link>
+        ) : null}
       </div>
     </div>
   )

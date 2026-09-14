@@ -40,12 +40,22 @@ import type {
   GalleryContent,
   EmailSignupContent,
   SpecTableContent,
+  ProductPageContent,
+  ColorwayContent,
+  CustomerContent,
+  ProductVariantContent,
+  RelatedProductsContent,
 } from '.'
 
 // Recursive parsers require lazy loading
 export const parseContent: Parser<Content> = lazy(() =>
   oneOf(
     parsePageContent,
+    parseProductPageContent,
+    parseColorwayContent,
+    parseCustomerContent,
+    parseProductVariantContent,
+    parseRelatedProductsContent,
     parseTestimonialsContent,
     parseTestimonialContent,
     parseCardsContent,
@@ -130,6 +140,16 @@ export const parseTestimonialContent = object<TestimonialContent>({
   title: parseString,
   image: withDefault(parseAssetContent, undefined),
   imageBackgroundColor: parseBackgroundColor,
+  // Falls back to undefined when `testimonial.customer` wasn't resolved and the
+  // field is still a bare uuid string.
+  customer: withDefault(
+    object({
+      uuid: parseString,
+      content: lazy(() => parseCustomerContent),
+    }),
+    undefined,
+  ),
+  rating: withDefault(parseString, ''),
 })
 
 export const parseTestimonialsContent = object<TestimonialsContent>({
@@ -145,6 +165,7 @@ export const parseCardContent = object<CardContent>({
   component: equals('card'),
   _uid: parseString,
   _editable: optional(parseString),
+  title: withDefault(parseString, ''),
   description: parseRichTextContent,
   icon: withDefault(parseAssetContent, undefined),
 })
@@ -153,6 +174,7 @@ export const parseCardsContent = object<CardsContent>({
   component: equals('cards'),
   _uid: parseString,
   _editable: optional(parseString),
+  title: withDefault(parseString, ''),
   description: parseRichTextContent,
   cards: array(parseCardContent),
 })
@@ -278,4 +300,77 @@ export const parseSpecTableContent = object<SpecTableContent>({
     thead: [],
     tbody: [],
   } as TableContent),
+  spec_sheet: optional(withDefault(parseAssetContent, undefined)),
+})
+
+export const parseColorwayContent = object<ColorwayContent>({
+  component: equals('colorway'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  name: withDefault(parseString, ''),
+  swatch: withDefault(parseAssetContent, undefined),
+})
+
+export const parseCustomerContent = object<CustomerContent>({
+  component: equals('customer'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  name: withDefault(parseString, ''),
+  title: withDefault(parseString, ''),
+  location: withDefault(parseString, ''),
+  image: withDefault(parseAssetContent, undefined),
+})
+
+export const parseProductVariantContent = object<ProductVariantContent>({
+  component: equals('productVariant'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  colorway: withDefault(
+    object({
+      uuid: parseString,
+      content: parseColorwayContent,
+    }),
+    undefined,
+  ),
+  // Number fields come back as strings, but tolerate a real number too.
+  price: withDefault(
+    oneOf(
+      parseString,
+      map(parseNumber, (amount) => String(amount)),
+    ),
+    '',
+  ),
+})
+
+export const parseRelatedProductsContent = object<RelatedProductsContent>({
+  component: equals('relatedProducts'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  title: withDefault(parseString, ''),
+  products: withDefault(
+    array(
+      object({
+        uuid: parseString,
+        name: withDefault(parseString, ''),
+        full_slug: withDefault(parseString, ''),
+        content: object({
+          meta_description: optional(withDefault(parseString, undefined)),
+          og_image: optional(withDefault(parseAssetContent, undefined)),
+        }),
+      }),
+    ),
+    [],
+  ),
+})
+
+export const parseProductPageContent = object<ProductPageContent>({
+  component: equals('productPage'),
+  _uid: parseString,
+  _editable: optional(parseString),
+  body: withDefault(parseBlocks, []),
+  launch_date: optional(withDefault(parseString, undefined)),
+  variants: withDefault(array(parseProductVariantContent), []),
+  meta_title: optional(withDefault(parseString, undefined)),
+  meta_description: optional(withDefault(parseString, undefined)),
+  og_image: optional(withDefault(parseAssetContent, undefined)),
 })

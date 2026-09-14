@@ -10,6 +10,11 @@ import type {
 export type Content =
   | UnknownContent
   | PageContent
+  | ProductPageContent
+  | ColorwayContent
+  | CustomerContent
+  | ProductVariantContent
+  | RelatedProductsContent
   | TestimonialContent
   | TestimonialsContent
   | CardsContent
@@ -42,6 +47,60 @@ export type PageContent = BlockContent<{
   og_image?: AssetContent
 }>
 
+export type ProductPageContent = BlockContent<{
+  component: 'productPage'
+  body: Content[]
+  /** `YYYY-MM-DD HH:mm` from Storyblok's datetime field. */
+  launch_date?: string
+  variants: ProductVariantContent[]
+  meta_title?: string
+  meta_description?: string
+  og_image?: AssetContent
+}>
+
+export type ColorwayContent = BlockContent<{
+  component: 'colorway'
+  name: string
+  swatch?: AssetContent
+}>
+
+export type CustomerContent = BlockContent<{
+  component: 'customer'
+  name: string
+  title: string
+  location: string
+  image?: AssetContent
+}>
+
+export type ProductVariantContent = BlockContent<{
+  component: 'productVariant'
+  colorway?: Story & {
+    content: ColorwayContent
+  }
+  /** Storyblok number fields are delivered as strings. */
+  price: string
+}>
+
+/**
+ * A product referenced from another product's page. Only the fields the teaser
+ * card needs are parsed, so this doesn't recurse into the whole page body.
+ */
+export type RelatedProductContent = {
+  uuid: string
+  name: string
+  full_slug: string
+  content: {
+    meta_description?: string
+    og_image?: AssetContent
+  }
+}
+
+export type RelatedProductsContent = BlockContent<{
+  component: 'relatedProducts'
+  title: string
+  products: RelatedProductContent[]
+}>
+
 export type BackgroundColor =
   | 'beige'
   | 'white'
@@ -60,6 +119,16 @@ export type TestimonialContent = BlockContent<{
   name: string
   title: string
   imageBackgroundColor: BackgroundColor
+  /**
+   * A profile in the `customers/` folder. When set it replaces the inline
+   * name, title and image above, which stay for testimonials authored before
+   * customer profiles existed.
+   */
+  customer?: Story & {
+    content: CustomerContent
+  }
+  /** `'1'` to `'5'`, empty when the testimonial isn't a rated review. */
+  rating: string
 }>
 
 export type TestimonialsContent = BlockContent<{
@@ -71,12 +140,14 @@ export type TestimonialsContent = BlockContent<{
 
 export type CardsContent = BlockContent<{
   component: 'cards'
+  title: string
   description: RichTextContent
   cards: CardContent[]
 }>
 
 export type CardContent = BlockContent<{
   component: 'card'
+  title: string
   description: RichTextContent
   icon?: AssetContent
 }>
@@ -144,4 +215,5 @@ export type SpecTableContent = BlockContent<{
   component: 'specTable'
   title: string
   specs: TableContent
+  spec_sheet?: AssetContent
 }>

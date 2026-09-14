@@ -57,7 +57,7 @@ function AppBarView(props: AppbarProps) {
         <div className="flex items-center gap-1 sm:gap-1.5">
           <BrandIcon />
           <div className="text-stone-900 text-lg sm:text-xl font-bold leading-6 sm:leading-7">
-            BrightStart
+            Aurrora Shoes
           </div>
         </div>
         <div className="sm:hidden flex items-center gap-2">

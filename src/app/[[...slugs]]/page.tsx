@@ -1,34 +1,39 @@
-import { getStoryPath } from '@/delivery-api'
+import { getStoryPath } from "@/delivery-api";
 import {
   BridgeSearchParams,
   parseBridgeSearchParams,
-} from '@/BridgeSearchParams'
+} from "@/BridgeSearchParams";
 import {
   array,
   formatResult,
   object,
   parseString,
   withDefault,
-} from 'pure-parse'
-import { notFound } from 'next/navigation'
-import { getStoryblokApi } from '@/lib/storyblok'
-import { StoryblokStory } from '@storyblok/react/rsc'
-import { cache } from 'react'
-import type { Metadata } from 'next'
-import { isSupportedLocale } from '@/i18n/locales'
+} from "pure-parse";
+import { notFound } from "next/navigation";
+import { getStoryblokApi } from "@/lib/storyblok";
+import { StoryblokStory } from "@storyblok/react/rsc";
+import { cache } from "react";
+import type { Metadata } from "next";
+import { isSupportedLocale } from "@/i18n/locales";
 // Parsing: uncomment the lines below to perform runtime validation of the story content
 // import { parseContent } from '@/content'
 
-const resolveRelations = ['teamMembers.teamMembers']
+const resolveRelations = [
+  "teamMembers.teamMembers",
+  "testimonial.customer",
+  "productVariant.colorway",
+  "relatedProducts.products",
+];
 
 type DynamicPageProps = {
-  params: Promise<unknown>
-  searchParams: Promise<unknown>
-}
+  params: Promise<unknown>;
+  searchParams: Promise<unknown>;
+};
 
 const parseParams = object<{ slugs: string[] }>({
   slugs: withDefault(array(parseString), []),
-})
+});
 
 /**
  * Splits a leading locale segment off the path (e.g. `/de/about` -> locale
@@ -39,12 +44,12 @@ const parseParams = object<{ slugs: string[] }>({
 const splitLocaleFromSlugs = (
   slugs: string[],
 ): { locale: string | undefined; pageSlugs: string[] } => {
-  const [first, ...rest] = slugs
+  const [first, ...rest] = slugs;
   if (first && isSupportedLocale(first)) {
-    return { locale: first, pageSlugs: rest }
+    return { locale: first, pageSlugs: rest };
   }
-  return { locale: undefined, pageSlugs: slugs }
-}
+  return { locale: undefined, pageSlugs: slugs };
+};
 
 /**
  * Fetch a story from the Storyblok delivery API.
@@ -56,8 +61,8 @@ const splitLocaleFromSlugs = (
  */
 const getStory = cache(
   async (slugs: string[], bridgeSearchParams: BridgeSearchParams) => {
-    const client = getStoryblokApi()
-    const { locale, pageSlugs } = splitLocaleFromSlugs(slugs)
+    const client = getStoryblokApi();
+    const { locale, pageSlugs } = splitLocaleFromSlugs(slugs);
 
     return await client
       .get(`cdn/stories/${getStoryPath(pageSlugs, bridgeSearchParams)}`, {
@@ -66,40 +71,40 @@ const getStory = cache(
         // The visual editor's language switcher takes priority in draft mode;
         // otherwise, use the locale detected from the URL (or the default language).
         language:
-          bridgeSearchParams.version === 'draft'
+          bridgeSearchParams.version === "draft"
             ? bridgeSearchParams._storyblok_lang
-            : (locale ?? 'default'),
+            : (locale ?? "default"),
       })
       .then((result) => result.data)
       .catch((error: { status: number; message: string }) => {
         if (error.status === 404) {
-          notFound()
+          notFound();
         }
         throw new Error(
           `Failed to fetch story: ${error.status} ${error.message}`,
-        )
-      })
+        );
+      });
   },
-)
+);
 
 export async function generateMetadata(
   props: DynamicPageProps,
 ): Promise<Metadata> {
-  const paramsResult = parseParams(await props.params)
+  const paramsResult = parseParams(await props.params);
   if (paramsResult.error) {
-    return {}
+    return {};
   }
 
-  const bridgeSearchParams = parseBridgeSearchParams(await props.searchParams)
+  const bridgeSearchParams = parseBridgeSearchParams(await props.searchParams);
   const { story } = await getStory(
     paramsResult.value.slugs,
     bridgeSearchParams,
-  )
+  );
   const content = story.content as {
-    meta_title?: string
-    meta_description?: string
-    og_image?: { filename?: string }
-  }
+    meta_title?: string;
+    meta_description?: string;
+    og_image?: { filename?: string };
+  };
 
   return {
     title: content.meta_title || story.name,
@@ -107,21 +112,24 @@ export async function generateMetadata(
     openGraph: content.og_image?.filename
       ? { images: [content.og_image.filename] }
       : undefined,
-  }
+  };
 }
 
 export default async function DynamicPage(props: DynamicPageProps) {
-  const paramsResult = parseParams(await props.params)
+  const paramsResult = parseParams(await props.params);
 
   if (paramsResult.error) {
     throw new Error(
       `Failed to parse params: the folders in the app directory are likely misconfigured ${formatResult(paramsResult)}`,
-    )
+    );
   }
 
-  const bridgeSearchParams = parseBridgeSearchParams(await props.searchParams)
+  const bridgeSearchParams = parseBridgeSearchParams(await props.searchParams);
 
-  const { story } = await getStory(paramsResult.value.slugs, bridgeSearchParams)
+  const { story } = await getStory(
+    paramsResult.value.slugs,
+    bridgeSearchParams,
+  );
 
   // Parsing: uncomment the lines below to perform runtime validation of the story content
   // const contentResult = parseContent(story.content)
@@ -139,5 +147,5 @@ export default async function DynamicPage(props: DynamicPageProps) {
         resolveRelations,
       }}
     />
-  )
+  );
 }

@@ -16,6 +16,11 @@ function Cards(props: CardsProps) {
     >
       <div className="max-w-6xl flex flex-col gap-10">
         <div className="self-stretch flex-1 inline-flex flex-col justify-center items-start gap-2">
+          {props.blok.title ? (
+            <h2 className="text-2xl md:text-3xl leading-tight tracking-[-0.3px] font-extrabold text-[#1F1F1F] font-inter">
+              {props.blok.title}
+            </h2>
+          ) : null}
           <RichTextView doc={props.blok.description} />
         </div>
         <div className="self-stretch flex justify-start items-stretch gap-4 md:gap-6 flex-col md:flex-row">
